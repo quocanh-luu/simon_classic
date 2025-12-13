@@ -1,0 +1,33 @@
+version: "3.9"
+
+services:
+  backend:
+    build: ./backend
+    container_name: backend_service
+    ports:
+      - "3001:3001"
+    volumes:
+      - ./backend:/app
+    environment:
+      - NODE_ENV=production
+      - SERIAL_PORT=/dev/ttyUSB0
+      - BAUD_RATE=115200
+    restart: unless-stopped
+
+  frontend:
+    build: ./frontend
+    container_name: simon-frontend
+    ports:
+      - "5173:5173"                      # Vite / DevServer
+      # Falls ihr später "npm run build" + nginx macht, dann wäre das 80:80
+    volumes:
+      - ./frontend:/app
+    environment:
+      - NODE_ENV=production
+      - VITE_API_URL=http://localhost:3001
+    restart: unless-stopped
+
+
+networks:
+  default:
+    driver: bridge

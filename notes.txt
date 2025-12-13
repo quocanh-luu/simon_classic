@@ -1,0 +1,17 @@
+Kommunikation zwischen MCU und Server 
+- Websocket
+- MCU verbindet sich zu websocket Server
+- Server sendet Echtzeit LED BEfehle an MCU
+- MCU sendet Events an Server 
+
+Backend
+- Spiellogik
+- Kommunikation mit MCU mit Websocket
+- Kommunikation mit WebUI 
+    Websocket
+    - Echtzeit Updates
+    - LEDs blinken synchron
+
+    REST API
+    - spiel starten, stoppen
+- 

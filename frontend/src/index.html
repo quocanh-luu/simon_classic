@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>ESP Minimal UI</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    button { margin: 5px; padding: 5px 10px; }
+  </style>
+</head>
+<body>
+  <h1>ESP Minimal UI</h1>
+
+  <div>
+    <button id="startBtn">Start</button>
+    <button id="stopBtn">Stop</button>
+    <button id="pauseBtn">Pause</button>
+    <button id="resumeBtn">Resume</button>
+  </div>
+
+  <div style="margin-top:20px;">
+    <strong>Status:</strong> <span id="status">unknown</span><br>
+    <strong>Zeit:</strong> <span id="time">0</span> ms
+  </div>
+
+  <script>
+    // Verbindung zum WebSocket-Server
+    const ws = new WebSocket(`ws://${location.host}`);
+
+    const statusEl = document.getElementById('status');
+    const timeEl = document.getElementById('time');
+
+    ws.addEventListener('open', () => {
+      console.log('WebSocket verbunden');
+    });
+
+    ws.addEventListener('message', (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+
+        // Wenn Server Status vom ESP schickt, anzeigen
+        if (msg.type === 'state' || msg.type === 'status') {
+          statusEl.textContent = msg.state || 'unknown';
+          timeEl.textContent = msg.time_ms || 0;
+        }
+      } catch(e) {
+        console.error('Fehler beim Parsen:', e);
+      }
+    });
+
+    // Buttons senden Commands an den Server
+    function sendCommand(cmd) {
+      const message = { type: 'command', cmd: cmd };
+      ws.send(JSON.stringify(message));
+      console.log('Command gesendet:', cmd);
+    }
+
+    document.getElementById('startBtn').onclick = () => sendCommand('start');
+    document.getElementById('stopBtn').onclick = () => sendCommand('stop');
+    document.getElementById('pauseBtn').onclick = () => sendCommand('pause');
+    document.getElementById('resumeBtn').onclick = () => sendCommand('resume');
+  </script>
+</body>
+</html>
