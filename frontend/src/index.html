@@ -49,10 +49,10 @@
     });
 
     // Buttons senden Commands an den Server
-    function sendCommand(cmd) {
-      const message = { type: 'command', cmd: cmd };
+    function sendCommand(action) {
+      const message = { type: 'command', action: action };
       ws.send(JSON.stringify(message));
-      console.log('Command gesendet:', cmd);
+      console.log('Command gesendet:', action);
     }
 
     document.getElementById('startBtn').onclick = () => sendCommand('start');

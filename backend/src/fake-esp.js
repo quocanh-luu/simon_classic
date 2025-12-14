@@ -1,24 +1,34 @@
 const WebSocket = require('ws');
 
-// Verbinde dich zum Server
 const ws = new WebSocket('ws://localhost:3000');
 
 ws.on('open', () => {
-  console.log('Fake ESP verbunden');
+    console.log('🧪 Mock-ESP verbunden');
 
-  // Alle 2 Sekunden Status senden
-  setInterval(() => {
-    const status = {
-      type: 'status',
-      state: Math.random() > 0.5 ? 'playing' : 'idle', // zufälliger Status
-      time_ms: Math.floor(Math.random() * 10000)
-    };
-    ws.send(JSON.stringify(status));
-    console.log('Status gesendet:', status);
-  }, 2000);
-});
+    ws.send(JSON.stringify({
+      type: 'hello',
+      role: 'esp'
+    }));
+  });
 
-// Server-Nachrichten empfangen (z. B. Befehle von Web UI)
 ws.on('message', (data) => {
-  console.log('Nachricht vom Server:', data.toString());
+  const msg = JSON.parse(data);
+  console.log('📩 Server → ESP:', msg);
+
+  // Simuliere LED-Anzeige
+  if (msg.action === 'led_on') {
+    console.log(`💡 LED: ${msg.color}`);
+
+    // Simuliere richtigen Tastendruck nach 500ms
+    setTimeout(() => {
+      ws.send(JSON.stringify({
+        type: 'sensor',
+        color: msg.color   // korrekt gedrückt
+      }));
+    }, 500);
+  }
+
+  if (msg.action === 'game_over') {
+    console.log('💀 GAME OVER');
+  }
 });
